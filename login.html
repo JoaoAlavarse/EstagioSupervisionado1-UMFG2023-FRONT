@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Diogo Muneratto">
+
+    <title>MG MONTAGEM</title>
+
+    <link href="./src/fonts/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="./src/css/admin.min.css" rel="stylesheet">
+    <link href="./src/css/app.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-info">
+    <div id="loading" class="open">
+        <img src="./src/img/loading.gif">
+    </div>
+
+    <div class="container">
+
+        <!-- Outer Row -->
+        <div class="row justify-content-center">
+
+            <div class="col-xl-10 col-lg-12 col-md-9" style="padding-top: 10%;">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <!-- Nested Row within Card Body -->
+                        <div class="row">
+                            <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                            <div class="col-lg-6">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">Bem vindo</h1>
+                                    </div>
+                                    <form id="login" class="user" method="POST" action="http://localhost:8080/login" onsubmit="return false;">
+                                        <div class="msg"></div>
+                                        <div class="form-group">
+                                            <input type="email" name="email" class="form-control form-control-user email" placeholder="Digite seu email...">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" name="password" class="form-control form-control-user password" placeholder="Digite sua senha...">
+                                        </div>
+                                        <input type="submit" value="Entrar" class="btn btn-primary btn-user btn-block">
+                                    </form>
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="./src/lib/jquery.min.js"></script>
+    <script src="./src/lib/bootstrap.min.js"></script>
+    <script src="./src/lib/jquery.easing.min.js"></script>
+    <script src="./src/js/admin.min.js"></script>
+
+    <script>
+        let loading;
+        $(document).ready(() => {
+            loading = $('#loading').toggleClass('open');
+        });
+
+        $("#login").submit(function(e){
+            e.preventDefault();
+
+            let msg = $('.msg').text('Email ou senha inválida');
+
+            let data = {
+               
+               'email': $('.email').val(),
+                'password' : $('.password').val()
+            }
+
+
+            loading.toggleClass('open');
+
+            $.ajax({
+                type: 'POST',
+                url: this.action,
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                dataType: 'json',
+                statusCode: {
+                    200: function(response) {
+                        msg.text('Login efeuado com sucesso').addClass('alert alert-sucess');
+                        setTimeout(function(){
+                            localStorage.setItem('@token', response.responseText);
+                            console.log(response)
+                            alert(response.responseText);
+                            window.location.href = "./";
+                        }, 2000)
+                    },
+                    401: function() {
+                        msg.addClass('alert alert-danger');
+                        loading.toggleClass('open');
+                    }
+                },
+            })
+                        
+        })
+
+    </script>
+
+</body>
+
+</html>

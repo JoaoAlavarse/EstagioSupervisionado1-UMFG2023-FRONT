@@ -1,0 +1,22 @@
+<form action="" method="post">
+<div class="msg"></div>
+<label>Nome:</label>
+<input class="form-control" type="text" ng-model="item.name">
+<label>DataNacimento:</label>
+<input class="form-control" type="date" ng-model="item.birth_date" ng-change="formatarDataParaServidor()">
+<label>CPF:</label>
+<input class="form-control" type="text" ng-model="item.cpf">
+<label>Genero:</label>
+<select class="form-control" name="genero" ng-model="item.gender">
+    <option value=0>MASCULINO</option>
+    <option value=1>FEMININO</option>
+    <option value=2>OUTRO</option>
+</select>
+
+<label>Cargo:</label>
+<input class="form-control" type="text" ng-model="item.charge">
+<label>Celular:</label>
+<input class="form-control" type="text" ng-model="item.phone">
+<label>Endereço:</label>
+<input class="form-control" type="text" ng-model="item.address">
+</form>
