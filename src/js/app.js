@@ -389,6 +389,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                     console.log("teste" + response)
                     $scope.grid = response.data;
                 })
+
                 //deletar item
                 $scope.del = function(k, i){
                     $ngConfirm({
@@ -484,67 +485,80 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             }
         })
 
-        .state('construct', {
-            url:'/construct',
-            templateUrl: './pages/obras/grid.html',
+        .state('alocacao', {
+            url:'/alocacao',
+            templateUrl: './pages/alocacao/grid.html',
             controller: function($scope, $http, $ngConfirm){
 
-                $scope.getCep = function(){
-                    $.getJSON("https://viacep.com.br/ws/" + $scope.item.cep + "/json/?callback=?", function(dados) {
-                        $scope.item.endereco = dados.logradouro;
-                        $scope.item.cidade = dados.localidade;
-                        $scope.item.uf = dados.uf;
-                    })
-                }
 
+                $scope.formatarData = function (milissegundos) {
+                    var data = new Date(milissegundos);
+                    return data.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+                };
+
+                $scope.formatarDataParaServidor = function() {
+                    var data = new Date($scope.item.allocation_date);
+                    var dataFormatada = data.getFullYear() + '-' +
+                                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
+                                        ('0' + data.getDate()).slice(-2);
+                    $scope.item.birth_date = dataFormatada;
+                };
+
+                $scope.formatarDataParaServidor = function() {
+                    var data = new Date($scope.item.devolution_date);
+                    var dataFormatada = data.getFullYear() + '-' +
+                                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
+                                        ('0' + data.getDate()).slice(-2);
+                    $scope.item.birth_date = dataFormatada;
+                };
 
                 
                 //listar dados
-                $http.get('http://localhost:8080/employee')
+                $http.get('http://localhost:8080/allocation', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token},        
+                })
                 .then(function(response) {
-                    console.log(response)
+                    console.log("teste" + response)
                     $scope.grid = response.data;
-                });
+                })
 
 
                 //deletar item
                 $scope.del = function(k, i){
-
-                        $.ajax({
-                            url: 'http://localhost:8080/employeeemployeeemployee/'+i.id_employee,
-                            type: 'DELETE',
-                            success: function(data) {
-                              //play with data
-                            }
-                          });
-           
-                    // $ngConfirm({
-                    //     title: 'Atenção',
-                    //     content: 'Tem certeza que desejar remover este item?',
-                    //     scope: $scope,
-                    //     buttons: {
-                    //         not: {
-                    //             text: 'Não',
-                    //             btnClass: 'btn-danger'
-                    //         },
-                    //         yes: {
-                    //             text: 'Sim',
-                    //             btnClass: 'btn-primary',
-                    //             action: function(){
+                    $ngConfirm({
+                        title: 'Atenção',
+                        content: 'Tem certeza que desejar remover este item?',
+                        scope: $scope,
+                        buttons: {
+                            not: {
+                                text: 'Não',
+                                btnClass: 'btn-danger'
+                            },
+                            yes: {
+                                text: 'Sim',
+                                btnClass: 'btn-primary',
+                                action: function(){
                                     
-                    //                 $scope.grid.splice(k, 1);
-                    //                 $scope.$apply();   
+                                    $scope.grid.splice(k, 1);
+                                    $scope.$apply();   
 
-                    //                 $.ajax('http://localhost:8080/employee/'+i.id_employee,{
-                    //                     type : 'DELETE'
-                    //                     })
-                    //                 .then(function(){
-                    //                     $.alert('Registro deletado com sucesso.');
-                    //                 })
-                    //             }
-                    //         }
-                    //     }
-                    // })
+                                    $.ajax({
+                                        url: 'http://localhost:8080/allocation/' + encodeURIComponent(i.id_allocation),
+                                        type: 'DELETE',
+                                        headers: {'Authorization': 'Bearer ' + token}, 
+                                        success: function(data) {
+                                            console.log('Delete bem-sucedido:', data);
+                                        },
+                                        error: function(jqXHR, textStatus, errorThrown) {
+                                           alert("Alocação não pôde ser excluido")
+                                           window.location.reload();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    })
                 }
 
                 //função para adicionar e editar dados
@@ -553,8 +567,8 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                     $scope.item = angular.copy(i);
 
                     $ngConfirm({
-                        title: (k == 'add') ? 'Cadastrar Pessoa' : 'Atualizar Pessoa',
-                        contentUrl: './pages/obras/form.html',
+                        title: (k == 'add') ? 'Cadastrar Alocação' : 'Atualizar Alocação',
+                        contentUrl: './pages/alocacao/form.html',
                         scope: $scope,
                         typeAnimed: true,
                         closeIcon: true,
@@ -565,35 +579,29 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                 btnClass: 'btn-primary',
                                 action: function(scope, button){
 
-                                    let ids = (k == 'add') ? '' : '/'+i.id_employee;
+                                    let ids = (k == 'add') ? '' : '/'+i.id_allocation;
                                     let data = $scope.item;
                                     let methotd = (k == 'add') ? 'POST' : 'PUT';
 
                                     $.ajax({
                                         type: methotd,
-                                        url: 'http://localhost:8080/employee'+ids,
+                                        url: 'http://localhost:8080/allocation'+ids,
                                         data: JSON.stringify({
-                                            "name": data.name,
-                                            "cpf": data.cpf,
-                                            "phone": "string",
-                                            "address": "string",
-                                            "charge": "string",
-                                            "gender": 0,
-                                            "birth_date": "2023-11-18T00:36:41.079Z"
+                                            "id_construction": data.id_construction,
+                                            "id_resource": data.id_resource,
+                                            "allocation_date": data.allocation_date,
+                                            "devolution_date": data.devolution_date
                                           }),
+                                        headers: {'Authorization': 'Bearer ' + token}, 
                                         contentType: "application/json",
                                         dataType: 'json',
                                         statusCode: {
                                             200: function() {
-                                                msg.text('Login efeuado com sucesso').addClass('alert alert-sucess');
-                                                setTimeout(function(){
-                                                    localStorage.setItem('@token', 'true');
-                                                    window.location.href = "./";
-                                                }, 2000)
-                                            },
-                                            401: function() {
-                                                msg.addClass('alert alert-danger');
-                                                loading.toggleClass('open');
+                                                // Lida com a resposta de sucesso
+                                                console.log('Atualização bem-sucedida:');
+
+                                                // Recarrega a página
+                                                window.location.reload();
                                             }
                                         },
                                     })
