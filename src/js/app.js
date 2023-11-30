@@ -512,6 +512,92 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                     $scope.item.birth_date = dataFormatada;
                 };
 
+                                
+                $scope.showObraDetails = function(index, item) {
+                    // Faz uma requisição GET para obter os dados da obra
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:8080/construction/' + item.id_construction, // Substitua pela sua URL correta
+                        headers: {'Authorization': 'Bearer ' + token},
+                        dataType: 'json',
+                        success: function(response) {
+                            // Verifica se a resposta contém dados válidos
+                            if (response && response.id_construction) {
+                                // Abre o formulário com os dados preenchidos
+                                $ngConfirm({
+                                    title: 'Detalhes da Obra',
+                                    contentUrl: './pages/obras/form.html',
+                                    scope: $scope,
+                                    typeAnimed: true,
+                                    closeIcon: true,
+                                    theme: 'dark',
+                                    buttons: {
+                                        close: {
+                                            text: 'Fechar',
+                                            btnClass: 'btn-secondary',
+                                            action: function(scope, button) {
+                                                // Nenhuma ação necessária ao fechar o formulário
+                                            }
+                                        }
+                                    },
+                                    onScopeReady: function (scope) {
+                                        // Define os dados da obra no escopo
+                                        scope.item = response;
+                                    }
+                                });
+                            } else {
+                                console.error('Erro ao obter dados da obra.');
+                            }
+                        },
+                        error: function() {
+                            console.error('Erro na requisição GET para obter dados da obra.');
+                        }
+                    });
+                };
+
+                                
+                $scope.showRecursoDetails = function(index, item) {
+                    // Faz uma requisição GET para obter os dados da obra
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:8080/resource/' + item.id_resource, // Substitua pela sua URL correta
+                        headers: {'Authorization': 'Bearer ' + token},
+                        dataType: 'json',
+                        success: function(response) {
+                            // Verifica se a resposta contém dados válidos
+                            if (response && response.id_resource) {
+                                // Abre o formulário com os dados preenchidos
+                                $ngConfirm({
+                                    title: 'Detalhes da Obra',
+                                    contentUrl: './pages/recursos/form.html',
+                                    scope: $scope,
+                                    typeAnimed: true,
+                                    closeIcon: true,
+                                    theme: 'dark',
+                                    buttons: {
+                                        close: {
+                                            text: 'Fechar',
+                                            btnClass: 'btn-secondary',
+                                            action: function(scope, button) {
+                                                // Nenhuma ação necessária ao fechar o formulário
+                                            }
+                                        }
+                                    },
+                                    onScopeReady: function (scope) {
+                                        // Define os dados da obra no escopo
+                                        scope.item = response;
+                                    }
+                                });
+                            } else {
+                                console.error('Erro ao obter dados da obra.');
+                            }
+                        },
+                        error: function() {
+                            console.error('Erro na requisição GET para obter dados da obra.');
+                        }
+                    });
+                };
+
                 
                 //listar dados
                 $http.get('http://localhost:8080/allocation', {
