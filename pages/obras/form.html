@@ -1,16 +1,21 @@
 <form action="" method="post">
     <div class="msg"></div>
     <label>Empresa:</label>
-    <input class="form-control" type="text" ng-model="item.empresa">
+    <input class="form-control" type="text" ng-model="item.company">
     <label>CNPJ:</label>
     <input class="form-control" type="text" ng-model="item.cnpj">
     <label>Data de Inicio:</label>
-    <input class="form-control" type="date" ng-model="item.dataDeInicio" >
+    <input class="form-control" type="date" ng-model="item.start_date" >
     <label>Data de Entrega:</label>
-    <input class="form-control" type="date" ng-model="item.dataDeEntrega">
-    <label>Status:</label>
-    <input class="form-control" type="text" ng-model="item.status">
+    <input class="form-control" type="date" ng-model="item.delivery_date">
     <label>Endereço:</label>
-    <input class="form-control" type="text" ng-model="item.endereco">
-    
+    <input class="form-control" type="text" ng-model="item.address">
+    <label>Status:</label>
+    <select class="form-control" ng-model="item.status">
+        <option value=0>APROVADA</option>
+        <option value=1>PARALISADA</option>
+        <option value=2>CANCELADA</option>
+        <option value=3>EM ANDAMENTO</option>
+        <option value=4>CONCLUIDA</option>
+    </select>
     </form>

@@ -336,43 +336,94 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         
         .state('obra', {
             url:'/obra',
-            templateUrl: './pages/obrasM/grid.html',
+            templateUrl: './pages/obras/grid.html',
             controller: function($scope, $http, $ngConfirm){
+
+                $scope.formatarData = function (milissegundos) {
+                    var data = new Date(milissegundos);
+                    return data.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+                };
+
+                $scope.formatarDataParaServidor = function() {
+                    var data = new Date($scope.item.start_date);
+                    var dataFormatada = data.getFullYear() + '-' +
+                                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
+                                        ('0' + data.getDate()).slice(-2);
+                    $scope.item.birth_date = dataFormatada;
+                };
+
+                $scope.formatarDataParaServidor = function() {
+                    var data = new Date($scope.item.delivery_date);
+                    var dataFormatada = data.getFullYear() + '-' +
+                                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
+                                        ('0' + data.getDate()).slice(-2);
+                    $scope.item.birth_date = dataFormatada;
+                };
+
+                $scope.filter = function(tipo) {
+                    var url = 'http://localhost:8080/construction';                           
+                    if (tipo === 'sem-filtro') {
+                        window.location.reload();
+                    } else {
+                        $http.get(url, {
+                            headers: {
+                                'Authorization': 'Bearer ' + token
+                            },
+                        })
+                        .then(function(response) {
+                            console.log(response);
+                            $scope.grid = response.data.filter(function(construction) {
+                                return construction.status === tipo;
+                            });
+                        });
+                    }
+                };
+
                 
                 //listar dados
-                $http.get('./api/obras.php?list')
+                $http.get('http://localhost:8080/construction', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token},        
+                })
                 .then(function(response) {
+                    console.log("teste" + response)
                     $scope.grid = response.data;
-                });
-
+                })
                 //deletar item
                 $scope.del = function(k, i){
-           
-                    // $ngConfirm({
-                    //     title: 'Atenção',
-                    //     content: 'Tem certeza que desejar remover este item?',
-                    //     scope: $scope,
-                    //     buttons: {
-                    //         not: {
-                    //             text: 'Não',
-                    //             btnClass: 'btn-danger'
-                    //         },
-                    //         yes: {
-                    //             text: 'Sim',
-                    //             btnClass: 'btn-primary',
-                    //             action: function(){
+                    $ngConfirm({
+                        title: 'Atenção',
+                        content: 'Tem certeza que desejar remover este item?',
+                        scope: $scope,
+                        buttons: {
+                            not: {
+                                text: 'Não',
+                                btnClass: 'btn-danger'
+                            },
+                            yes: {
+                                text: 'Sim',
+                                btnClass: 'btn-primary',
+                                action: function(){
                                     
-                    //                 $scope.grid.splice(k, 1);
-                    //                 $scope.$apply();   
+                                    $scope.grid.splice(k, 1);
+                                    $scope.$apply();   
 
-                    //                 $.get('./api/obras.php?del='+i.id)
-                    //                 .then(function(){
-                    //                     $.alert('Registro deletado com sucesso.');
-                    //                 })
-                    //             }
-                    //         }
-                    //     }
-                    // })
+                                    $.ajax({
+                                        url: 'http://localhost:8080/construction/' + encodeURIComponent(i.id_construction),
+                                        type: 'DELETE',
+                                        headers: {'Authorization': 'Bearer ' + token}, 
+                                        success: function(data) {
+                                            console.log('Delete bem-sucedido:', data);
+                                        },
+                                        error: function(jqXHR, textStatus, errorThrown) {
+                                           alert("Obra não pôde ser excluido")
+                                           window.location.reload();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    })
                 }
 
                 //função para adicionar e editar dados
@@ -381,8 +432,8 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                     $scope.item = angular.copy(i);
 
                     $ngConfirm({
-                        title: (k == 'add') ? 'Cadastrar User' : 'Atualizar User',
-                        contentUrl: './pages/obrasM/form.html',
+                        title: (k == 'add') ? 'Cadastrar Obra' : 'Atualizar Obra',
+                        contentUrl: './pages/obras/form.html',
                         scope: $scope,
                         typeAnimed: true,
                         closeIcon: true,
@@ -393,33 +444,35 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                 btnClass: 'btn-primary',
                                 action: function(scope, button){
 
-                                    let ids = (k == 'add') ? '' : '?id='+i.id;
+                                    let ids = (k == 'add') ? '' : '/'+i.id_construction;
                                     let data = $scope.item;
-                                    $.post('./api/users.php' + ids, data, function(rs){
-                                        
-                                        $('.msg').text(rs.msg).removeClass('alert-danger');
+                                    let methotd = (k == 'add') ? 'POST' : 'PUT';
 
-                                        if(rs.status == 200){
-                                            $('.msg').addClass('alert alert-success');
+                                    $.ajax({
+                                        type: methotd,
+                                        url: 'http://localhost:8080/construction'+ids,
+                                        data: JSON.stringify({
+                                            "company": data.company,
+                                            "cnpj": data.cnpj,
+                                            "start_date": data.start_date,
+                                            "delivery_date": data.delivery_date,
+                                            "address": data.address,
+                                            "status": data.status
+                                          }),
+                                        headers: {'Authorization': 'Bearer ' + token}, 
+                                        contentType: "application/json",
+                                        dataType: 'json',
+                                        statusCode: {
+                                            200: function() {
+                                                // Lida com a resposta de sucesso
+                                                console.log('Atualização bem-sucedida:');
 
-                                            if(k == 'add'){
-                                                console.log($scope.item)
-                                                $scope.grid.push($scope.item);
-                                            } else {
-                                                $scope.grid[k] = $scope.item;
+                                                // Recarrega a página
+                                                window.location.reload();
                                             }
-                                           
-                                            $scope.$apply();
-                                            setTimeout(function(){
-                                                $('.ng-confirm').remove();
-                                            }, 1000)
-                                            
-                                        } else {
-                                            $('.msg').addClass('alert alert-danger');
-                                            return false
-                                        }
-                                        
-                                    }, "json");
+                                        },
+                                    })
+                                    
 
                                     return false
 
