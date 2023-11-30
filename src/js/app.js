@@ -72,11 +72,40 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                     console.log(response)
                     $scope.grid = response.data;
                 })
-                .catch(function(error) {
-                    console.error('Erro na solicitação HTTP:', error);
-                });
+
                 
+                $scope.filter = function(k, i){
+                    if (k === 'ativo'){
+                        $http.get('http://localhost:8080/employee', {
+                            headers: {
+                                'Authorization': 'Bearer ' + token},        
+                        })
+                        .then(function(response) {
+                            console.log(response)
+                            $scope.grid = response.data.filter(function(employee){
+        
+                                return employee.status === 'ATIVO';
+                            })
+                        })
+                    } else {
+                        $http.get('http://localhost:8080/employee', {
+                            headers: {
+                                'Authorization': 'Bearer ' + token},        
+                        })
+                        .then(function(response) {
+                            console.log(response)
+                            $scope.grid = response.data.filter(function(employee){
+        
+                                return employee.status === 'INATIVO';
+                            })
+                        })
+                    }
+                }
+
+
+
                 
+
 
 
                 //deletar item
@@ -147,7 +176,8 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                             "address": data.address,
                                             "charge": data.charge,
                                             "gender": data.gender,
-                                            "birth_date": data.birth_date
+                                            "birth_date": data.birth_date,
+                                            "status": data.status
                                           }),
                                         headers: {'Authorization': 'Bearer ' + token}, 
                                         contentType: "application/json",

@@ -14,6 +14,7 @@
     <link href="./src/fonts/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="./src/css/admin.min.css" rel="stylesheet">
     <link href="./src/css/app.css" rel="stylesheet">
+    <link rel="icon" href="./src/img/logo_mg.png">
 
 </head>
 
@@ -98,8 +99,6 @@
                         msg.text('Login efeuado com sucesso').addClass('alert alert-sucess');
                         setTimeout(function(){
                             localStorage.setItem('@token', response.responseText);
-                            console.log(response)
-                            alert(response.responseText);
                             window.location.href = "./";
                         }, 2000)
                     },

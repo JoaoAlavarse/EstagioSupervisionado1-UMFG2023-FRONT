@@ -5,6 +5,8 @@
     </div>
     <div class="col-md-6 text-right">
         <button class="btn btn-success" ng-click="send('add')">Cadastrar Novo</button>
+        <button class="btn btn-warning" ng-click="filter('ativo')">Filtro Ativos</button>
+        <button class="btn btn-danger" ng-click="filter('inativo')">Filtro Ativos</button>
     </div>
 </div>
 
@@ -18,7 +20,7 @@
             <td>Genero</td>
             <td>Cargo</td>
             <td>Celular</td>
-            <td>Endereco</td>
+            <td>Status</td>
             <td></td>
             <td></td>
         </tr>
@@ -31,7 +33,7 @@
             <td>{{x.gender}}</td>
             <td>{{x.charge}}</td>
             <td>{{x.phone}}</td>
-            <td>{{x.address}}</td>
+            <td>{{x.status}}</td>
             <td width="200">
                 <button class="btn btn-info" ng-click="send($index, x)">Editar</button>
                 <button class="btn btn-danger" ng-click="del($index, x)">Deletar</button>
