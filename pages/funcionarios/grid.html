@@ -20,6 +20,7 @@
 <table class="table">
     <thead>
         <tr>
+            <td>Id</td>
             <td>NOME</td>
             <td>DataNacimento</td>
             <td>CPF</td>
@@ -33,6 +34,7 @@
     </thead>
     <tbody>
         <tr ng-repeat="x in grid">
+            <td>{{x.id_employee}}</td>
             <td>{{x.name}}</td>
             <td>{{ formatarData(x.birth_date) }}</td>
             <td>{{x.cpf}}</td>
