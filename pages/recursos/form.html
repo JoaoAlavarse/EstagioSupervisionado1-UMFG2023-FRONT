@@ -3,13 +3,17 @@
 <label>Nome do Recusso:</label>
 <input class="form-control" type="text" ng-model="item.name">
 <label>Marca:</label>
-<input class="form-control" type="text" ng-model="item.marca">
-<label>Data da Compra:</label>
-<input class="form-control" type="date" ng-model="item.dataCompra">
+<input class="form-control" type="text" ng-model="item.brand">
 <label>Quantidade:</label>
-<input class="form-control" type="number" ng-model="item.quantidade">
+<input class="form-control" type="number" ng-model="item.quantity">
 <label>Tipo do Recurso:</label>
-<input class="form-control" type="text" ng-model="item.recurso">
-
-
+<select class="form-control" ng-model="item.type">
+    <option value=0>CONSUMIVEL</option>
+    <option value=1>FERRAMENTA</option>
+    <option value=2>MOBILIZADO</option>
+</select>
+<label>Data da Compra:</label>
+<input class="form-control" type="date" ng-model="item.purchase">
+<label>Observação</label>
+<input class="form-control" type="text" ng-model="item.observation">
 </form>
