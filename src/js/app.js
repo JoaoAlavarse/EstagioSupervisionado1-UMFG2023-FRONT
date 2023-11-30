@@ -1,4 +1,7 @@
+
+
 let app = angular.module('myApp', ['ui.router', 'cp.ngConfirm']);
+
 
 app.controller('ctrlGlobal', function($scope, $http, $ngConfirm){
     //logout
@@ -37,7 +40,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     $stateProvider
         .state('home', {
             url:'/',
-            template: '<h3>Home</h3>'
+            templateUrl: './pages/home/home.html'
         })
         .state('about', {
             url:'/about',
@@ -62,6 +65,10 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                     $scope.item.birth_date = dataFormatada;
                 };
 
+                $scope.generatePDF = function(){
+
+                }
+                
                 
                 //listar dados
                 $http.get('http://localhost:8080/employee', {
