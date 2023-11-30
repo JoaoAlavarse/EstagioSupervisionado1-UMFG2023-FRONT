@@ -3,13 +3,19 @@
     <div class="col-md-6">
         <h3>Cadastro de Funcionarios</h3>
     </div>
-    <div class="col-md-6 text-right">
+    <div class="col-md-2">
+        <select class=" form-control" ng-model="filtroStatus" ng-change="filter(filtroStatus)">
+            <option value="sem-filtro">Sem Filtro</option>
+            <option value="ativo">Ativos</option>
+            <option value="inativo">Inativos</option>
+        </select> 
+    </div>
+    <div class="col-md-4 text-right">
         <button class="btn btn-success" ng-click="send('add')">Cadastrar Novo</button>
-        <button class="btn btn-warning" ng-click="filter('ativo')">Filtro Ativos</button>
-        <button class="btn btn-danger" ng-click="filter('inativo')">Filtro Ativos</button>
+
     </div>
 </div>
-
+<br>
 
 <table class="table">
     <thead>

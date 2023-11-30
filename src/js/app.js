@@ -74,39 +74,25 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 })
 
                 
-                $scope.filter = function(k, i){
-                    if (k === 'ativo'){
-                        $http.get('http://localhost:8080/employee', {
+                $scope.filter = function(status) {
+                    var url = 'http://localhost:8080/employee';
+                    
+                    if (status === 'ativo' || status === 'inativo') {
+                        $http.get(url, {
                             headers: {
-                                'Authorization': 'Bearer ' + token},        
+                                'Authorization': 'Bearer ' + token
+                            },
                         })
                         .then(function(response) {
-                            console.log(response)
-                            $scope.grid = response.data.filter(function(employee){
-        
-                                return employee.status === 'ATIVO';
-                            })
-                        })
+                            console.log(response);
+                            $scope.grid = response.data.filter(function(employee) {
+                                return employee.status === (status === 'ativo' ? 'ATIVO' : 'INATIVO');
+                            });
+                        });
                     } else {
-                        $http.get('http://localhost:8080/employee', {
-                            headers: {
-                                'Authorization': 'Bearer ' + token},        
-                        })
-                        .then(function(response) {
-                            console.log(response)
-                            $scope.grid = response.data.filter(function(employee){
-        
-                                return employee.status === 'INATIVO';
-                            })
-                        })
+                        window.location.reload();
                     }
-                }
-
-
-
-                
-
-
+                };
 
                 //deletar item
                 $scope.del = function(k, i){
@@ -151,7 +137,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
 
                     $ngConfirm({
                         title: (k == 'add') ? 'Cadastrar Funcionario' : 'Atualizar Funcionario',
-                        contentUrl: './pages/funcionario/form.html',
+                        contentUrl: './pages/funcionarios/form.html',
                         scope: $scope,
                         typeAnimed: true,
                         closeIcon: true,
@@ -221,6 +207,26 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                         ('0' + data.getDate()).slice(-2);
                     $scope.item.birth_date = dataFormatada;
                 };
+
+                $scope.filter = function(tipo) {
+                    var url = 'http://localhost:8080/resource';                           
+                    if (tipo === 'sem-filtro') {
+                        window.location.reload();
+                    } else {
+                        $http.get(url, {
+                            headers: {
+                                'Authorization': 'Bearer ' + token
+                            },
+                        })
+                        .then(function(response) {
+                            console.log(response);
+                            $scope.grid = response.data.filter(function(resource) {
+                                return resource.type === tipo;
+                            });
+                        });
+                    }
+                };
+                
                 
                 //listar dados
                 $http.get('http://localhost:8080/resource', {
