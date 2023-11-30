@@ -26,6 +26,10 @@
             <td>{{x.id_construction}}</td>
             <td>{{x.id_employee}}</td>
             <td width="200">
+                <button class="btn btn-secondary" ng-click="showEmployeeDetails($index, x)">Funcionário</button>
+                <button class="btn btn-warning" ng-click="showObraDetails($index, x)">Obra</button>
+            </td>
+            <td width="200">
                 <button class="btn btn-info" ng-click="send($index, x)">Editar</button>
                 <button class="btn btn-danger" ng-click="del($index, x)">Deletar</button>
             </td>

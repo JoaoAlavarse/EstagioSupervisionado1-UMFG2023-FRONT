@@ -621,7 +621,92 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             templateUrl: './pages/funcionarioObra/grid.html',
             controller: function($scope, $http, $ngConfirm){
 
+                $scope.showEmployeeDetails = function(index, item) {
+                    // Faz uma requisição GET para obter os dados do id_employee
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:8080/employee/' + item.id_employee, // Substitua pela sua URL correta
+                        headers: {'Authorization': 'Bearer ' + token},
+                        dataType: 'json',
+                        success: function(response) {
+                            // Verifica se a resposta contém dados válidos
+                            if (response && response.id_employee) {
+                                // Abre o formulário com os dados preenchidos
+                                $ngConfirm({
+                                    title: 'Detalhes do Funcionário',
+                                    contentUrl: './pages/funcionarios/form.html',
+                                    scope: $scope,
+                                    typeAnimed: true,
+                                    closeIcon: true,
+                                    theme: 'dark',
+                                    buttons: {
+                                        close: {
+                                            text: 'Fechar',
+                                            btnClass: 'btn-secondary',
+                                            action: function(scope, button) {
+                                                // Nenhuma ação necessária ao fechar o formulário
+                                            }
+                                        }
+                                    },
+                                    onScopeReady: function (scope) {
+                                        // Define os dados do funcionário no escopo
+                                        scope.item = response;
+                                    }
+                                });
+                            } else {
+                                console.error('Erro ao obter dados do funcionário.');
+                            }
+                        },
+                        error: function() {
+                            console.error('Erro na requisição GET para obter dados do funcionário.');
+                        }
+                    });
+                };         
                 
+                $scope.showObraDetails = function(index, item) {
+                    // Faz uma requisição GET para obter os dados da obra
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:8080/construction/' + item.id_construction, // Substitua pela sua URL correta
+                        headers: {'Authorization': 'Bearer ' + token},
+                        dataType: 'json',
+                        success: function(response) {
+                            // Verifica se a resposta contém dados válidos
+                            if (response && response.id_construction) {
+                                // Abre o formulário com os dados preenchidos
+                                $ngConfirm({
+                                    title: 'Detalhes da Obra',
+                                    contentUrl: './pages/obras/form.html',
+                                    scope: $scope,
+                                    typeAnimed: true,
+                                    closeIcon: true,
+                                    theme: 'dark',
+                                    buttons: {
+                                        close: {
+                                            text: 'Fechar',
+                                            btnClass: 'btn-secondary',
+                                            action: function(scope, button) {
+                                                // Nenhuma ação necessária ao fechar o formulário
+                                            }
+                                        }
+                                    },
+                                    onScopeReady: function (scope) {
+                                        // Define os dados da obra no escopo
+                                        scope.item = response;
+                                    }
+                                });
+                            } else {
+                                console.error('Erro ao obter dados da obra.');
+                            }
+                        },
+                        error: function() {
+                            console.error('Erro na requisição GET para obter dados da obra.');
+                        }
+                    });
+                };
+                
+
+
                 //listar dados
                 $http.get('http://localhost:8080/constructionEmployee', {
                     headers: {
