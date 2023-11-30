@@ -616,4 +616,111 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 }
             }
         })
+        .state('funcionarioObra', {
+            url:'/funcionarioObra',
+            templateUrl: './pages/funcionarioObra/grid.html',
+            controller: function($scope, $http, $ngConfirm){
+
+                
+                //listar dados
+                $http.get('http://localhost:8080/constructionEmployee', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token},        
+                })
+                .then(function(response) {
+                    console.log("teste" + response)
+                    $scope.grid = response.data;
+                })
+
+
+                //deletar item
+                $scope.del = function(k, i){
+                    $ngConfirm({
+                        title: 'Atenção',
+                        content: 'Tem certeza que desejar remover este item?',
+                        scope: $scope,
+                        buttons: {
+                            not: {
+                                text: 'Não',
+                                btnClass: 'btn-danger'
+                            },
+                            yes: {
+                                text: 'Sim',
+                                btnClass: 'btn-primary',
+                                action: function(){
+                                    
+                                    $scope.grid.splice(k, 1);
+                                    $scope.$apply();   
+
+                                    $.ajax({
+                                        url: 'http://localhost:8080/constructionEmployee/' + encodeURIComponent(i.id_construction_employee),
+                                        type: 'DELETE',
+                                        headers: {'Authorization': 'Bearer ' + token}, 
+                                        success: function(data) {
+                                            console.log('Delete bem-sucedido:', data);
+                                        },
+                                        error: function(jqXHR, textStatus, errorThrown) {
+                                           alert("Relação não pôde ser excluido")
+                                           window.location.reload();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    })
+                }
+
+                //função para adicionar e editar dados
+                $scope.send = function(k, i){
+
+                    $scope.item = angular.copy(i);
+
+                    $ngConfirm({
+                        title: (k == 'add') ? 'Cadastrar Alocação' : 'Atualizar Alocação',
+                        contentUrl: './pages/funcionarioObra/form.html',
+                        scope: $scope,
+                        typeAnimed: true,
+                        closeIcon: true,
+                        theme: 'dark',
+                        buttons: {
+                            yes: {
+                                text: (k == 'add') ? 'Salvar' : 'Editar',
+                                btnClass: 'btn-primary',
+                                action: function(scope, button){
+
+                                    let ids = (k == 'add') ? '' : '/'+i.id_construction_employee;
+                                    let data = $scope.item;
+                                    let methotd = (k == 'add') ? 'POST' : 'PUT';
+
+                                    $.ajax({
+                                        type: methotd,
+                                        url: 'http://localhost:8080/constructionEmployee'+ids,
+                                        data: JSON.stringify({
+                                            "id_construction": data.id_construction,
+                                            "id_employee": data.id_employee
+                                          }),
+                                        headers: {'Authorization': 'Bearer ' + token}, 
+                                        contentType: "application/json",
+                                        dataType: 'json',
+                                        statusCode: {
+                                            200: function() {
+                                                // Lida com a resposta de sucesso
+                                                console.log('Atualização bem-sucedida:');
+
+                                                // Recarrega a página
+                                                window.location.reload();
+                                            }
+                                        },
+                                    })
+                                    
+
+                                    return false
+
+                                }
+                            }
+                        }
+                    })
+                }
+            }
+        })
  }]);
