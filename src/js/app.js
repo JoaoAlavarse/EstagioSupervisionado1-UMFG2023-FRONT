@@ -113,23 +113,6 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 }
                 
                 
-                
-                
-                
-                
-                
-                
-
-                
-                  
-                  
-                  
-                
-                
-                
-                
-                
-                
                 //listar dados
                 $http.get('http://localhost:8080/employee', {
                     headers: {
@@ -261,6 +244,53 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             url:'/recurso',
             templateUrl: './pages/recursos/grid.html',
             controller: function($scope, $http, $ngConfirm){
+
+                $scope.generatePDF = function () {
+                    // Obtém o valor selecionado do filtro
+                    const filtroSelecionado = $scope.filtroTipo || "Sem Filtro";
+                
+                    // Clona a tabela para evitar manipulações no original
+                    const tabelaClonada = document.getElementById('table').cloneNode(true);
+                
+                    // Remove os botões de imprimir, editar e deletar
+                    const botoesRemovidos = tabelaClonada.querySelectorAll('.notPrint');
+                    botoesRemovidos.forEach(function (botao) {
+                        botao.parentNode.removeChild(botao);
+                    });
+                
+                    // Ajusta o estilo da tabela para garantir que o cabeçalho fique acima do corpo
+                    const estilo = "<style>" +
+                        "body {font-family: Arial, sans-serif;}" + // Especifica a fonte para o corpo do documento
+                        "h3 {color: #333;}" + // Cor do título
+                        "table {width: 100%; border-collapse: collapse; margin-bottom: 20px;}" +
+                        "table, th, td {border: 1px solid #ddd;}" +
+                        "th, td {padding: 12px; text-align: left;}" +
+                        "th {background-color: #f2f2f2;}" +
+                        "tr:hover {background-color: #f5f5f5;}" +
+                        "thead {display: table-header-group;}" +  // Garante que o cabeçalho seja tratado como grupo de cabeçalho
+                        ".noPrint {display: none;}" +  // Adiciona uma classe para ocultar o botão de imprimir
+                        "td, th {border: 1px solid #ddd;}" + // Adiciona bordas para células
+                        "tr {border-bottom: 1px solid #ddd;}" + // Adiciona borda inferior para linhas
+                        "</style>";
+                
+                    // Obtém o conteúdo HTML da tabela clonada
+                    const conteudo = tabelaClonada.outerHTML;
+                
+                    // Abrir uma nova janela para gerar o PDF
+                    const win = window.open('', '', 'height=700, width=700');
+                    win.document.write('<html><head>');
+                    win.document.write('<title>Relatorio de Recursos</title>');
+                    win.document.write(estilo);
+                    win.document.write('</head><body>');
+                    win.document.write('<h3 style="text-align: center;">Cadastro de Recursos</h3>');
+                    win.document.write('<div style="text-align: right; margin-bottom: 10px;">');
+                    win.document.write('<p>FILTRO: "' + filtroSelecionado + '"</p>'); // Adiciona o valor do filtro no PDF
+                    win.document.write('<button class="btn btn-info noPrint" onclick="window.print()">Imprimir</button>');
+                    win.document.write('</div>');
+                    win.document.write(conteudo);
+                    win.document.write('</body></html>');
+                    win.print();
+                }
 
                 $scope.formatarData = function (milissegundos) {
                     var data = new Date(milissegundos);
@@ -405,6 +435,53 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             url:'/obra',
             templateUrl: './pages/obras/grid.html',
             controller: function($scope, $http, $ngConfirm){
+
+                $scope.generatePDF = function () {
+                    // Obtém o valor selecionado do filtro
+                    const filtroSelecionado = $scope.filtroTipo || "Sem Filtro";
+                
+                    // Clona a tabela para evitar manipulações no original
+                    const tabelaClonada = document.getElementById('table').cloneNode(true);
+                
+                    // Remove os botões de imprimir, editar e deletar
+                    const botoesRemovidos = tabelaClonada.querySelectorAll('.notPrint');
+                    botoesRemovidos.forEach(function (botao) {
+                        botao.parentNode.removeChild(botao);
+                    });
+                
+                    // Ajusta o estilo da tabela para garantir que o cabeçalho fique acima do corpo
+                    const estilo = "<style>" +
+                        "body {font-family: Arial, sans-serif;}" + // Especifica a fonte para o corpo do documento
+                        "h3 {color: #333;}" + // Cor do título
+                        "table {width: 100%; border-collapse: collapse; margin-bottom: 20px;}" +
+                        "table, th, td {border: 1px solid #ddd;}" +
+                        "th, td {padding: 12px; text-align: left;}" +
+                        "th {background-color: #f2f2f2;}" +
+                        "tr:hover {background-color: #f5f5f5;}" +
+                        "thead {display: table-header-group;}" +  // Garante que o cabeçalho seja tratado como grupo de cabeçalho
+                        ".noPrint {display: none;}" +  // Adiciona uma classe para ocultar o botão de imprimir
+                        "td, th {border: 1px solid #ddd;}" + // Adiciona bordas para células
+                        "tr {border-bottom: 1px solid #ddd;}" + // Adiciona borda inferior para linhas
+                        "</style>";
+                
+                    // Obtém o conteúdo HTML da tabela clonada
+                    const conteudo = tabelaClonada.outerHTML;
+                
+                    // Abrir uma nova janela para gerar o PDF
+                    const win = window.open('', '', 'height=700, width=700');
+                    win.document.write('<html><head>');
+                    win.document.write('<title>Relatorio de Obras</title>');
+                    win.document.write(estilo);
+                    win.document.write('</head><body>');
+                    win.document.write('<h3 style="text-align: center;">Cadastro de Obras</h3>');
+                    win.document.write('<div style="text-align: right; margin-bottom: 10px;">');
+                    win.document.write('<p>FILTRO: "' + filtroSelecionado + '"</p>'); // Adiciona o valor do filtro no PDF
+                    win.document.write('<button class="btn btn-info noPrint" onclick="window.print()">Imprimir</button>');
+                    win.document.write('</div>');
+                    win.document.write(conteudo);
+                    win.document.write('</body></html>');
+                    win.print();
+                }
 
                 $scope.formatarData = function (milissegundos) {
                     var data = new Date(milissegundos);
