@@ -3,9 +3,9 @@
 let app = angular.module('myApp', ['ui.router', 'cp.ngConfirm']);
 
 
-app.controller('ctrlGlobal', function($scope, $http, $ngConfirm){
+app.controller('ctrlGlobal', function ($scope, $http, $ngConfirm) {
     //logout
-    $scope.logout = function(){
+    $scope.logout = function () {
         $ngConfirm({
             title: 'Atenção',
             content: 'Tem certeza que desejar sair do sistema?',
@@ -18,7 +18,7 @@ app.controller('ctrlGlobal', function($scope, $http, $ngConfirm){
                 yes: {
                     text: 'Sim',
                     btnClass: 'btn-primary',
-                    action: function(){
+                    action: function () {
                         localStorage.removeItem('@token');
                         window.location.reload();
                     }
@@ -28,28 +28,28 @@ app.controller('ctrlGlobal', function($scope, $http, $ngConfirm){
     }
 })
 
-app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
 
     $urlRouterProvider.otherwise('/');
 
     let token = localStorage.getItem('@token');
-    if(token == null){
+    if (token == null) {
         window.location.href = '/sbadmin/login.html';
     }
- 
+
     $stateProvider
         .state('home', {
-            url:'/',
+            url: '/',
             templateUrl: './pages/home/home.html'
         })
         .state('about', {
-            url:'/about',
+            url: '/about',
             template: '<h3>About</h3>'
         })
         .state('funcionarios', {
-            url:'/funcionarios',
+            url: '/funcionarios',
             templateUrl: './pages/funcionarios/grid.html',
-            controller: function($scope, $http, $ngConfirm){
+            controller: function ($scope, $http, $ngConfirm) {
 
 
                 $scope.formatarData = function (milissegundos) {
@@ -57,27 +57,27 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                     return data.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
                 };
 
-                $scope.formatarDataParaServidor = function() {
+                $scope.formatarDataParaServidor = function () {
                     var data = new Date($scope.item.birth_date);
                     var dataFormatada = data.getFullYear() + '-' +
-                                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
-                                        ('0' + data.getDate()).slice(-2);
+                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
+                        ('0' + data.getDate()).slice(-2);
                     $scope.item.birth_date = dataFormatada;
                 };
 
                 $scope.generatePDF = function () {
                     // Obtém o valor selecionado do filtro
                     const filtroSelecionado = $scope.filtroStatus || "Sem Filtro";
-                
+
                     // Clona a tabela para evitar manipulações no original
                     const tabelaClonada = document.getElementById('table').cloneNode(true);
-                
+
                     // Remove os botões de imprimir, editar e deletar
                     const botoesRemovidos = tabelaClonada.querySelectorAll('.notPrint');
                     botoesRemovidos.forEach(function (botao) {
                         botao.parentNode.removeChild(botao);
                     });
-                
+
                     // Ajusta o estilo da tabela para garantir que o cabeçalho fique acima do corpo
                     const estilo = "<style>" +
                         "body {font-family: Arial, sans-serif;}" + // Especifica a fonte para o corpo do documento
@@ -92,10 +92,10 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                         "td, th {border: 1px solid #ddd;}" + // Adiciona bordas para células
                         "tr {border-bottom: 1px solid #ddd;}" + // Adiciona borda inferior para linhas
                         "</style>";
-                
+
                     // Obtém o conteúdo HTML da tabela clonada
                     const conteudo = tabelaClonada.outerHTML;
-                
+
                     // Abrir uma nova janela para gerar o PDF
                     const win = window.open('', '', 'height=700, width=700');
                     win.document.write('<html><head>');
@@ -111,41 +111,42 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                     win.document.write('</body></html>');
                     win.print();
                 }
-                
-                
+
+
                 //listar dados
                 $http.get('http://localhost:8080/employee', {
                     headers: {
-                        'Authorization': 'Bearer ' + token},        
+                        'Authorization': 'Bearer ' + token
+                    },
                 })
-                .then(function(response) {
-                    console.log("teste" + response)
-                    $scope.grid = response.data;
-                })
+                    .then(function (response) {
+                        console.log("teste" + response)
+                        $scope.grid = response.data;
+                    })
 
-                
-                $scope.filter = function(status) {
+
+                $scope.filter = function (status) {
                     var url = 'http://localhost:8080/employee';
-                    
+
                     if (status === 'ativo' || status === 'inativo') {
                         $http.get(url, {
                             headers: {
                                 'Authorization': 'Bearer ' + token
                             },
                         })
-                        .then(function(response) {
-                            console.log(response);
-                            $scope.grid = response.data.filter(function(employee) {
-                                return employee.status === (status === 'ativo' ? 'ATIVO' : 'INATIVO');
+                            .then(function (response) {
+                                console.log(response);
+                                $scope.grid = response.data.filter(function (employee) {
+                                    return employee.status === (status === 'ativo' ? 'ATIVO' : 'INATIVO');
+                                });
                             });
-                        });
                     } else {
                         window.location.reload();
                     }
                 };
 
                 //deletar item
-                $scope.del = function(k, i){
+                $scope.del = function (k, i) {
                     $ngConfirm({
                         title: 'Atenção',
                         content: 'Tem certeza que desejar remover este item?',
@@ -158,20 +159,20 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                             yes: {
                                 text: 'Sim',
                                 btnClass: 'btn-primary',
-                                action: function(){
-                                    
+                                action: function () {
+
                                     $scope.grid.splice(k, 1);
-                                    $scope.$apply();   
+                                    $scope.$apply();
 
                                     $.ajax({
                                         url: 'http://localhost:8080/employee/' + encodeURIComponent(i.id_employee),
                                         type: 'DELETE',
-                                        headers: {'Authorization': 'Bearer ' + token}, 
-                                        success: function(data) {
+                                        headers: { 'Authorization': 'Bearer ' + token },
+                                        success: function (data) {
                                             console.log('Delete bem-sucedido:', data);
                                         },
-                                        error: function(jqXHR, textStatus, errorThrown) {
-                                           alert("Funcionario não pôde ser excluido")
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            alert("Funcionario não pôde ser excluido")
                                         }
                                     });
                                 }
@@ -181,7 +182,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 }
 
                 //função para adicionar e editar dados
-                $scope.send = function(k, i){
+                $scope.send = function (k, i) {
 
                     $scope.item = angular.copy(i);
 
@@ -196,15 +197,15 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                             yes: {
                                 text: (k == 'add') ? 'Salvar' : 'Editar',
                                 btnClass: 'btn-primary',
-                                action: function(scope, button){
+                                action: function (scope, button) {
 
-                                    let ids = (k == 'add') ? '' : '/'+i.id_employee;
+                                    let ids = (k == 'add') ? '' : '/' + i.id_employee;
                                     let data = $scope.item;
                                     let methotd = (k == 'add') ? 'POST' : 'PUT';
 
                                     $.ajax({
                                         type: methotd,
-                                        url: 'http://localhost:8080/employee'+ids,
+                                        url: 'http://localhost:8080/employee' + ids,
                                         data: JSON.stringify({
                                             "name": data.name,
                                             "cpf": data.cpf,
@@ -214,12 +215,12 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                             "gender": data.gender,
                                             "birth_date": data.birth_date,
                                             "status": data.status
-                                          }),
-                                        headers: {'Authorization': 'Bearer ' + token}, 
+                                        }),
+                                        headers: { 'Authorization': 'Bearer ' + token },
                                         contentType: "application/json",
                                         dataType: 'json',
                                         statusCode: {
-                                            200: function() {
+                                            200: function () {
                                                 // Lida com a resposta de sucesso
                                                 console.log('Atualização bem-sucedida:');
 
@@ -228,7 +229,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                             }
                                         },
                                     })
-                                    
+
 
                                     return false
 
@@ -239,25 +240,25 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 }
             }
         })
-        
+
         .state('recurso', {
-            url:'/recurso',
+            url: '/recurso',
             templateUrl: './pages/recursos/grid.html',
-            controller: function($scope, $http, $ngConfirm){
+            controller: function ($scope, $http, $ngConfirm) {
 
                 $scope.generatePDF = function () {
                     // Obtém o valor selecionado do filtro
                     const filtroSelecionado = $scope.filtroTipo || "Sem Filtro";
-                
+
                     // Clona a tabela para evitar manipulações no original
                     const tabelaClonada = document.getElementById('table').cloneNode(true);
-                
+
                     // Remove os botões de imprimir, editar e deletar
                     const botoesRemovidos = tabelaClonada.querySelectorAll('.notPrint');
                     botoesRemovidos.forEach(function (botao) {
                         botao.parentNode.removeChild(botao);
                     });
-                
+
                     // Ajusta o estilo da tabela para garantir que o cabeçalho fique acima do corpo
                     const estilo = "<style>" +
                         "body {font-family: Arial, sans-serif;}" + // Especifica a fonte para o corpo do documento
@@ -272,10 +273,10 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                         "td, th {border: 1px solid #ddd;}" + // Adiciona bordas para células
                         "tr {border-bottom: 1px solid #ddd;}" + // Adiciona borda inferior para linhas
                         "</style>";
-                
+
                     // Obtém o conteúdo HTML da tabela clonada
                     const conteudo = tabelaClonada.outerHTML;
-                
+
                     // Abrir uma nova janela para gerar o PDF
                     const win = window.open('', '', 'height=700, width=700');
                     win.document.write('<html><head>');
@@ -297,16 +298,16 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                     return data.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
                 };
 
-                $scope.formatarDataParaServidor = function() {
+                $scope.formatarDataParaServidor = function () {
                     var data = new Date($scope.item.birth_date);
                     var dataFormatada = data.getFullYear() + '-' +
-                                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
-                                        ('0' + data.getDate()).slice(-2);
+                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
+                        ('0' + data.getDate()).slice(-2);
                     $scope.item.birth_date = dataFormatada;
                 };
 
-                $scope.filter = function(tipo) {
-                    var url = 'http://localhost:8080/resource';                           
+                $scope.filter = function (tipo) {
+                    var url = 'http://localhost:8080/resource';
                     if (tipo === 'sem-filtro') {
                         window.location.reload();
                     } else {
@@ -315,29 +316,30 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                 'Authorization': 'Bearer ' + token
                             },
                         })
-                        .then(function(response) {
-                            console.log(response);
-                            $scope.grid = response.data.filter(function(resource) {
-                                return resource.type === tipo;
+                            .then(function (response) {
+                                console.log(response);
+                                $scope.grid = response.data.filter(function (resource) {
+                                    return resource.type === tipo;
+                                });
                             });
-                        });
                     }
                 };
-                
-                
+
+
                 //listar dados
                 $http.get('http://localhost:8080/resource', {
                     headers: {
-                        'Authorization': 'Bearer ' + token},        
+                        'Authorization': 'Bearer ' + token
+                    },
                 })
-                .then(function(response) {
-                    console.log("teste" + response)
-                    $scope.grid = response.data;
-                })
+                    .then(function (response) {
+                        console.log("teste" + response)
+                        $scope.grid = response.data;
+                    })
 
 
                 //deletar item
-                $scope.del = function(k, i){
+                $scope.del = function (k, i) {
                     $ngConfirm({
                         title: 'Atenção',
                         content: 'Tem certeza que desejar remover este item?',
@@ -350,21 +352,21 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                             yes: {
                                 text: 'Sim',
                                 btnClass: 'btn-primary',
-                                action: function(){
-                                    
+                                action: function () {
+
                                     $scope.grid.splice(k, 1);
-                                    $scope.$apply();   
+                                    $scope.$apply();
 
                                     $.ajax({
                                         url: 'http://localhost:8080/resource/' + encodeURIComponent(i.id_resource),
                                         type: 'DELETE',
-                                        headers: {'Authorization': 'Bearer ' + token}, 
-                                        success: function(data) {
+                                        headers: { 'Authorization': 'Bearer ' + token },
+                                        success: function (data) {
                                             console.log('Delete bem-sucedido:', data);
                                         },
-                                        error: function(jqXHR, textStatus, errorThrown) {
-                                           alert("Recurso não pôde ser excluido")
-                                           window.location.reload();
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            alert("Recurso não pôde ser excluido")
+                                            window.location.reload();
                                         }
                                     });
                                 }
@@ -374,7 +376,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 }
 
                 //função para adicionar e editar dados
-                $scope.send = function(k, i){
+                $scope.send = function (k, i) {
 
                     $scope.item = angular.copy(i);
 
@@ -389,15 +391,15 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                             yes: {
                                 text: (k == 'add') ? 'Salvar' : 'Editar',
                                 btnClass: 'btn-primary',
-                                action: function(scope, button){
+                                action: function (scope, button) {
 
-                                    let ids = (k == 'add') ? '' : '/'+i.id_resource;
+                                    let ids = (k == 'add') ? '' : '/' + i.id_resource;
                                     let data = $scope.item;
                                     let methotd = (k == 'add') ? 'POST' : 'PUT';
 
                                     $.ajax({
                                         type: methotd,
-                                        url: 'http://localhost:8080/resource'+ids,
+                                        url: 'http://localhost:8080/resource' + ids,
                                         data: JSON.stringify({
                                             "name": data.name,
                                             "brand": data.brand,
@@ -405,12 +407,12 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                             "type": data.type,
                                             "purchase": data.purchase,
                                             "observation": data.observation
-                                          }),
-                                        headers: {'Authorization': 'Bearer ' + token}, 
+                                        }),
+                                        headers: { 'Authorization': 'Bearer ' + token },
                                         contentType: "application/json",
                                         dataType: 'json',
                                         statusCode: {
-                                            200: function() {
+                                            200: function () {
                                                 // Lida com a resposta de sucesso
                                                 console.log('Atualização bem-sucedida:');
 
@@ -419,7 +421,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                             }
                                         },
                                     })
-                                    
+
 
                                     return false
 
@@ -430,25 +432,25 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 }
             }
         })
-        
+
         .state('obra', {
-            url:'/obra',
+            url: '/obra',
             templateUrl: './pages/obras/grid.html',
-            controller: function($scope, $http, $ngConfirm){
+            controller: function ($scope, $http, $ngConfirm) {
 
                 $scope.generatePDF = function () {
                     // Obtém o valor selecionado do filtro
                     const filtroSelecionado = $scope.filtroTipo || "Sem Filtro";
-                
+
                     // Clona a tabela para evitar manipulações no original
                     const tabelaClonada = document.getElementById('table').cloneNode(true);
-                
+
                     // Remove os botões de imprimir, editar e deletar
                     const botoesRemovidos = tabelaClonada.querySelectorAll('.notPrint');
                     botoesRemovidos.forEach(function (botao) {
                         botao.parentNode.removeChild(botao);
                     });
-                
+
                     // Ajusta o estilo da tabela para garantir que o cabeçalho fique acima do corpo
                     const estilo = "<style>" +
                         "body {font-family: Arial, sans-serif;}" + // Especifica a fonte para o corpo do documento
@@ -463,10 +465,10 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                         "td, th {border: 1px solid #ddd;}" + // Adiciona bordas para células
                         "tr {border-bottom: 1px solid #ddd;}" + // Adiciona borda inferior para linhas
                         "</style>";
-                
+
                     // Obtém o conteúdo HTML da tabela clonada
                     const conteudo = tabelaClonada.outerHTML;
-                
+
                     // Abrir uma nova janela para gerar o PDF
                     const win = window.open('', '', 'height=700, width=700');
                     win.document.write('<html><head>');
@@ -488,24 +490,24 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                     return data.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
                 };
 
-                $scope.formatarDataParaServidor = function() {
+                $scope.formatarDataParaServidor = function () {
                     var data = new Date($scope.item.start_date);
                     var dataFormatada = data.getFullYear() + '-' +
-                                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
-                                        ('0' + data.getDate()).slice(-2);
+                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
+                        ('0' + data.getDate()).slice(-2);
                     $scope.item.birth_date = dataFormatada;
                 };
 
-                $scope.formatarDataParaServidor = function() {
+                $scope.formatarDataParaServidor = function () {
                     var data = new Date($scope.item.delivery_date);
                     var dataFormatada = data.getFullYear() + '-' +
-                                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
-                                        ('0' + data.getDate()).slice(-2);
+                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
+                        ('0' + data.getDate()).slice(-2);
                     $scope.item.birth_date = dataFormatada;
                 };
 
-                $scope.filter = function(tipo) {
-                    var url = 'http://localhost:8080/construction';                           
+                $scope.filter = function (tipo) {
+                    var url = 'http://localhost:8080/construction';
                     if (tipo === 'sem-filtro') {
                         window.location.reload();
                     } else {
@@ -514,28 +516,29 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                 'Authorization': 'Bearer ' + token
                             },
                         })
-                        .then(function(response) {
-                            console.log(response);
-                            $scope.grid = response.data.filter(function(construction) {
-                                return construction.status === tipo;
+                            .then(function (response) {
+                                console.log(response);
+                                $scope.grid = response.data.filter(function (construction) {
+                                    return construction.status === tipo;
+                                });
                             });
-                        });
                     }
                 };
 
-                
+
                 //listar dados
                 $http.get('http://localhost:8080/construction', {
                     headers: {
-                        'Authorization': 'Bearer ' + token},        
+                        'Authorization': 'Bearer ' + token
+                    },
                 })
-                .then(function(response) {
-                    console.log("teste" + response)
-                    $scope.grid = response.data;
-                })
+                    .then(function (response) {
+                        console.log("teste" + response)
+                        $scope.grid = response.data;
+                    })
 
                 //deletar item
-                $scope.del = function(k, i){
+                $scope.del = function (k, i) {
                     $ngConfirm({
                         title: 'Atenção',
                         content: 'Tem certeza que desejar remover este item?',
@@ -548,21 +551,21 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                             yes: {
                                 text: 'Sim',
                                 btnClass: 'btn-primary',
-                                action: function(){
-                                    
+                                action: function () {
+
                                     $scope.grid.splice(k, 1);
-                                    $scope.$apply();   
+                                    $scope.$apply();
 
                                     $.ajax({
                                         url: 'http://localhost:8080/construction/' + encodeURIComponent(i.id_construction),
                                         type: 'DELETE',
-                                        headers: {'Authorization': 'Bearer ' + token}, 
-                                        success: function(data) {
+                                        headers: { 'Authorization': 'Bearer ' + token },
+                                        success: function (data) {
                                             console.log('Delete bem-sucedido:', data);
                                         },
-                                        error: function(jqXHR, textStatus, errorThrown) {
-                                           alert("Obra não pôde ser excluido")
-                                           window.location.reload();
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            alert("Obra não pôde ser excluido")
+                                            window.location.reload();
                                         }
                                     });
                                 }
@@ -572,7 +575,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 }
 
                 //função para adicionar e editar dados
-                $scope.send = function(k, i){
+                $scope.send = function (k, i) {
 
                     $scope.item = angular.copy(i);
 
@@ -587,15 +590,15 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                             yes: {
                                 text: (k == 'add') ? 'Salvar' : 'Editar',
                                 btnClass: 'btn-primary',
-                                action: function(scope, button){
+                                action: function (scope, button) {
 
-                                    let ids = (k == 'add') ? '' : '/'+i.id_construction;
+                                    let ids = (k == 'add') ? '' : '/' + i.id_construction;
                                     let data = $scope.item;
                                     let methotd = (k == 'add') ? 'POST' : 'PUT';
 
                                     $.ajax({
                                         type: methotd,
-                                        url: 'http://localhost:8080/construction'+ids,
+                                        url: 'http://localhost:8080/construction' + ids,
                                         data: JSON.stringify({
                                             "company": data.company,
                                             "cnpj": data.cnpj,
@@ -603,12 +606,12 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                             "delivery_date": data.delivery_date,
                                             "address": data.address,
                                             "status": data.status
-                                          }),
-                                        headers: {'Authorization': 'Bearer ' + token}, 
+                                        }),
+                                        headers: { 'Authorization': 'Bearer ' + token },
                                         contentType: "application/json",
                                         dataType: 'json',
                                         statusCode: {
-                                            200: function() {
+                                            200: function () {
                                                 // Lida com a resposta de sucesso
                                                 console.log('Atualização bem-sucedida:');
 
@@ -617,7 +620,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                             }
                                         },
                                     })
-                                    
+
 
                                     return false
 
@@ -630,9 +633,9 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         })
 
         .state('alocacao', {
-            url:'/alocacao',
+            url: '/alocacao',
             templateUrl: './pages/alocacao/grid.html',
-            controller: function($scope, $http, $ngConfirm){
+            controller: function ($scope, $http, $ngConfirm) {
 
 
                 $scope.formatarData = function (milissegundos) {
@@ -640,31 +643,31 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                     return data.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
                 };
 
-                $scope.formatarDataParaServidor = function() {
+                $scope.formatarDataParaServidor = function () {
                     var data = new Date($scope.item.allocation_date);
                     var dataFormatada = data.getFullYear() + '-' +
-                                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
-                                        ('0' + data.getDate()).slice(-2);
+                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
+                        ('0' + data.getDate()).slice(-2);
                     $scope.item.birth_date = dataFormatada;
                 };
 
-                $scope.formatarDataParaServidor = function() {
+                $scope.formatarDataParaServidor = function () {
                     var data = new Date($scope.item.devolution_date);
                     var dataFormatada = data.getFullYear() + '-' +
-                                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
-                                        ('0' + data.getDate()).slice(-2);
+                        ('0' + (data.getMonth() + 1)).slice(-2) + '-' +
+                        ('0' + data.getDate()).slice(-2);
                     $scope.item.birth_date = dataFormatada;
                 };
 
-                                
-                $scope.showObraDetails = function(index, item) {
+
+                $scope.showObraDetails = function (index, item) {
                     // Faz uma requisição GET para obter os dados da obra
                     $.ajax({
                         type: 'GET',
                         url: 'http://localhost:8080/construction/' + item.id_construction, // Substitua pela sua URL correta
-                        headers: {'Authorization': 'Bearer ' + token},
+                        headers: { 'Authorization': 'Bearer ' + token },
                         dataType: 'json',
-                        success: function(response) {
+                        success: function (response) {
                             // Verifica se a resposta contém dados válidos
                             if (response && response.id_construction) {
                                 // Abre o formulário com os dados preenchidos
@@ -679,7 +682,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                         close: {
                                             text: 'Fechar',
                                             btnClass: 'btn-secondary',
-                                            action: function(scope, button) {
+                                            action: function (scope, button) {
                                                 // Nenhuma ação necessária ao fechar o formulário
                                             }
                                         }
@@ -693,21 +696,21 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                 console.error('Erro ao obter dados da obra.');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             console.error('Erro na requisição GET para obter dados da obra.');
                         }
                     });
                 };
 
-                                
-                $scope.showRecursoDetails = function(index, item) {
+
+                $scope.showRecursoDetails = function (index, item) {
                     // Faz uma requisição GET para obter os dados da obra
                     $.ajax({
                         type: 'GET',
                         url: 'http://localhost:8080/resource/' + item.id_resource, // Substitua pela sua URL correta
-                        headers: {'Authorization': 'Bearer ' + token},
+                        headers: { 'Authorization': 'Bearer ' + token },
                         dataType: 'json',
-                        success: function(response) {
+                        success: function (response) {
                             // Verifica se a resposta contém dados válidos
                             if (response && response.id_resource) {
                                 // Abre o formulário com os dados preenchidos
@@ -722,7 +725,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                         close: {
                                             text: 'Fechar',
                                             btnClass: 'btn-secondary',
-                                            action: function(scope, button) {
+                                            action: function (scope, button) {
                                                 // Nenhuma ação necessária ao fechar o formulário
                                             }
                                         }
@@ -736,26 +739,27 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                 console.error('Erro ao obter dados da obra.');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             console.error('Erro na requisição GET para obter dados da obra.');
                         }
                     });
                 };
 
-                
+
                 //listar dados
                 $http.get('http://localhost:8080/allocation', {
                     headers: {
-                        'Authorization': 'Bearer ' + token},        
+                        'Authorization': 'Bearer ' + token
+                    },
                 })
-                .then(function(response) {
-                    console.log("teste" + response)
-                    $scope.grid = response.data;
-                })
+                    .then(function (response) {
+                        console.log("teste" + response)
+                        $scope.grid = response.data;
+                    })
 
 
                 //deletar item
-                $scope.del = function(k, i){
+                $scope.del = function (k, i) {
                     $ngConfirm({
                         title: 'Atenção',
                         content: 'Tem certeza que desejar remover este item?',
@@ -768,21 +772,21 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                             yes: {
                                 text: 'Sim',
                                 btnClass: 'btn-primary',
-                                action: function(){
-                                    
+                                action: function () {
+
                                     $scope.grid.splice(k, 1);
-                                    $scope.$apply();   
+                                    $scope.$apply();
 
                                     $.ajax({
                                         url: 'http://localhost:8080/allocation/' + encodeURIComponent(i.id_allocation),
                                         type: 'DELETE',
-                                        headers: {'Authorization': 'Bearer ' + token}, 
-                                        success: function(data) {
+                                        headers: { 'Authorization': 'Bearer ' + token },
+                                        success: function (data) {
                                             console.log('Delete bem-sucedido:', data);
                                         },
-                                        error: function(jqXHR, textStatus, errorThrown) {
-                                           alert("Alocação não pôde ser excluido")
-                                           window.location.reload();
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            alert("Alocação não pôde ser excluido")
+                                            window.location.reload();
                                         }
                                     });
                                 }
@@ -792,7 +796,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 }
 
                 //função para adicionar e editar dados
-                $scope.send = function(k, i){
+                $scope.send = function (k, i) {
 
                     $scope.item = angular.copy(i);
 
@@ -807,26 +811,26 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                             yes: {
                                 text: (k == 'add') ? 'Salvar' : 'Editar',
                                 btnClass: 'btn-primary',
-                                action: function(scope, button){
+                                action: function (scope, button) {
 
-                                    let ids = (k == 'add') ? '' : '/'+i.id_allocation;
+                                    let ids = (k == 'add') ? '' : '/' + i.id_allocation;
                                     let data = $scope.item;
                                     let methotd = (k == 'add') ? 'POST' : 'PUT';
 
                                     $.ajax({
                                         type: methotd,
-                                        url: 'http://localhost:8080/allocation'+ids,
+                                        url: 'http://localhost:8080/allocation' + ids,
                                         data: JSON.stringify({
                                             "id_construction": data.id_construction,
                                             "id_resource": data.id_resource,
                                             "allocation_date": data.allocation_date,
                                             "devolution_date": data.devolution_date
-                                          }),
-                                        headers: {'Authorization': 'Bearer ' + token}, 
+                                        }),
+                                        headers: { 'Authorization': 'Bearer ' + token },
                                         contentType: "application/json",
                                         dataType: 'json',
                                         statusCode: {
-                                            200: function() {
+                                            200: function () {
                                                 // Lida com a resposta de sucesso
                                                 console.log('Atualização bem-sucedida:');
 
@@ -835,7 +839,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                             }
                                         },
                                     })
-                                    
+
 
                                     return false
 
@@ -847,18 +851,18 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             }
         })
         .state('funcionarioObra', {
-            url:'/funcionarioObra',
+            url: '/funcionarioObra',
             templateUrl: './pages/funcionarioObra/grid.html',
-            controller: function($scope, $http, $ngConfirm){
+            controller: function ($scope, $http, $ngConfirm) {
 
-                $scope.showEmployeeDetails = function(index, item) {
+                $scope.showEmployeeDetails = function (index, item) {
                     // Faz uma requisição GET para obter os dados do id_employee
                     $.ajax({
                         type: 'GET',
                         url: 'http://localhost:8080/employee/' + item.id_employee, // Substitua pela sua URL correta
-                        headers: {'Authorization': 'Bearer ' + token},
+                        headers: { 'Authorization': 'Bearer ' + token },
                         dataType: 'json',
-                        success: function(response) {
+                        success: function (response) {
                             // Verifica se a resposta contém dados válidos
                             if (response && response.id_employee) {
                                 // Abre o formulário com os dados preenchidos
@@ -873,7 +877,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                         close: {
                                             text: 'Fechar',
                                             btnClass: 'btn-secondary',
-                                            action: function(scope, button) {
+                                            action: function (scope, button) {
                                                 // Nenhuma ação necessária ao fechar o formulário
                                             }
                                         }
@@ -887,20 +891,20 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                 console.error('Erro ao obter dados do funcionário.');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             console.error('Erro na requisição GET para obter dados do funcionário.');
                         }
                     });
-                };         
-                
-                $scope.showObraDetails = function(index, item) {
+                };
+
+                $scope.showObraDetails = function (index, item) {
                     // Faz uma requisição GET para obter os dados da obra
                     $.ajax({
                         type: 'GET',
                         url: 'http://localhost:8080/construction/' + item.id_construction, // Substitua pela sua URL correta
-                        headers: {'Authorization': 'Bearer ' + token},
+                        headers: { 'Authorization': 'Bearer ' + token },
                         dataType: 'json',
-                        success: function(response) {
+                        success: function (response) {
                             // Verifica se a resposta contém dados válidos
                             if (response && response.id_construction) {
                                 // Abre o formulário com os dados preenchidos
@@ -915,7 +919,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                         close: {
                                             text: 'Fechar',
                                             btnClass: 'btn-secondary',
-                                            action: function(scope, button) {
+                                            action: function (scope, button) {
                                                 // Nenhuma ação necessária ao fechar o formulário
                                             }
                                         }
@@ -929,27 +933,28 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                 console.error('Erro ao obter dados da obra.');
                             }
                         },
-                        error: function() {
+                        error: function () {
                             console.error('Erro na requisição GET para obter dados da obra.');
                         }
                     });
                 };
-                
+
 
 
                 //listar dados
                 $http.get('http://localhost:8080/constructionEmployee', {
                     headers: {
-                        'Authorization': 'Bearer ' + token},        
+                        'Authorization': 'Bearer ' + token
+                    },
                 })
-                .then(function(response) {
-                    console.log("teste" + response)
-                    $scope.grid = response.data;
-                })
+                    .then(function (response) {
+                        console.log("teste" + response)
+                        $scope.grid = response.data;
+                    })
 
 
                 //deletar item
-                $scope.del = function(k, i){
+                $scope.del = function (k, i) {
                     $ngConfirm({
                         title: 'Atenção',
                         content: 'Tem certeza que desejar remover este item?',
@@ -962,21 +967,21 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                             yes: {
                                 text: 'Sim',
                                 btnClass: 'btn-primary',
-                                action: function(){
-                                    
+                                action: function () {
+
                                     $scope.grid.splice(k, 1);
-                                    $scope.$apply();   
+                                    $scope.$apply();
 
                                     $.ajax({
                                         url: 'http://localhost:8080/constructionEmployee/' + encodeURIComponent(i.id_construction_employee),
                                         type: 'DELETE',
-                                        headers: {'Authorization': 'Bearer ' + token}, 
-                                        success: function(data) {
+                                        headers: { 'Authorization': 'Bearer ' + token },
+                                        success: function (data) {
                                             console.log('Delete bem-sucedido:', data);
                                         },
-                                        error: function(jqXHR, textStatus, errorThrown) {
-                                           alert("Relação não pôde ser excluido")
-                                           window.location.reload();
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            alert("Relação não pôde ser excluido")
+                                            window.location.reload();
                                         }
                                     });
                                 }
@@ -986,7 +991,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 }
 
                 //função para adicionar e editar dados
-                $scope.send = function(k, i){
+                $scope.send = function (k, i) {
 
                     $scope.item = angular.copy(i);
 
@@ -1001,24 +1006,24 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                             yes: {
                                 text: (k == 'add') ? 'Salvar' : 'Editar',
                                 btnClass: 'btn-primary',
-                                action: function(scope, button){
+                                action: function (scope, button) {
 
-                                    let ids = (k == 'add') ? '' : '/'+i.id_construction_employee;
+                                    let ids = (k == 'add') ? '' : '/' + i.id_construction_employee;
                                     let data = $scope.item;
                                     let methotd = (k == 'add') ? 'POST' : 'PUT';
 
                                     $.ajax({
                                         type: methotd,
-                                        url: 'http://localhost:8080/constructionEmployee'+ids,
+                                        url: 'http://localhost:8080/constructionEmployee' + ids,
                                         data: JSON.stringify({
                                             "id_construction": data.id_construction,
                                             "id_employee": data.id_employee
-                                          }),
-                                        headers: {'Authorization': 'Bearer ' + token}, 
+                                        }),
+                                        headers: { 'Authorization': 'Bearer ' + token },
                                         contentType: "application/json",
                                         dataType: 'json',
                                         statusCode: {
-                                            200: function() {
+                                            200: function () {
                                                 // Lida com a resposta de sucesso
                                                 console.log('Atualização bem-sucedida:');
 
@@ -1027,7 +1032,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                                             }
                                         },
                                     })
-                                    
+
 
                                     return false
 
@@ -1038,4 +1043,110 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 }
             }
         })
- }]);
+        .state('usuarios', {
+            url: '/usuarios',
+            templateUrl: './pages/users/grid.html',
+            controller: function ($scope, $http, $ngConfirm) {
+
+                $http.get('http://localhost:8080/user', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    },
+                })
+                    .then(function (response) {
+                        console.log("teste" + response)
+                        $scope.grid = response.data;
+                    })
+
+                //deletar item
+                $scope.del = function (k, i) {
+                    $ngConfirm({
+                        title: 'Atenção',
+                        content: 'Tem certeza que desejar remover este item?',
+                        scope: $scope,
+                        buttons: {
+                            not: {
+                                text: 'Não',
+                                btnClass: 'btn-danger'
+                            },
+                            yes: {
+                                text: 'Sim',
+                                btnClass: 'btn-primary',
+                                action: function () {
+
+                                    $scope.grid.splice(k, 1);
+                                    $scope.$apply();
+
+                                    $.ajax({
+                                        url: 'http://localhost:8080/user/' + encodeURIComponent(i.id_user),
+                                        type: 'DELETE',
+                                        headers: { 'Authorization': 'Bearer ' + token },
+                                        success: function (data) {
+                                            console.log('Delete bem-sucedido:', data);
+                                        },
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            alert("Usuário não pôde ser excluido")
+                                            window.location.reload();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    })
+                }
+                
+                                //função para adicionar e editar dados
+                                $scope.send = function (k, i) {
+
+                                    $scope.item = angular.copy(i);
+                
+                                    $ngConfirm({
+                                        title: (k == 'add') ? 'Cadastrar Usuário' : 'Atualizar Usuário',
+                                        contentUrl: './pages/users/form.html',
+                                        scope: $scope,
+                                        typeAnimed: true,
+                                        closeIcon: true,
+                                        theme: 'dark',
+                                        buttons: {
+                                            yes: {
+                                                text: (k == 'add') ? 'Salvar' : 'Editar',
+                                                btnClass: 'btn-primary',
+                                                action: function (scope, button) {
+                
+                                                    let ids = (k == 'add') ? '' : '/' + i.id_user;
+                                                    let data = $scope.item;
+                                                    let methotd = (k == 'add') ? 'POST' : 'PUT';
+                
+                                                    $.ajax({
+                                                        type: methotd,
+                                                        url: 'http://localhost:8080/user' + ids,
+                                                        data: JSON.stringify({
+                                                            "email": data.email,
+                                                            "password": data.password
+                                                        }),
+                                                        headers: { 'Authorization': 'Bearer ' + token },
+                                                        contentType: "application/json",
+                                                        dataType: 'json',
+                                                        statusCode: {
+                                                            200: function () {
+                                                                // Lida com a resposta de sucesso
+                                                                console.log('Atualização bem-sucedida:');
+                
+                                                                // Recarrega a página
+                                                                window.location.reload();
+                                                            }
+                                                        },
+                                                    })
+                
+                
+                                                    return false
+                
+                                                }
+                                            }
+                                        }
+                                    })
+                                }
+
+            }
+        })
+}]);
