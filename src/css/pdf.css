@@ -1,0 +1,7 @@
+.notPrint {
+    display: none !important;
+}
+
+.printConf {
+    display: block !important;
+}

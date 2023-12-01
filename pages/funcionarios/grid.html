@@ -4,21 +4,21 @@
         <h3>Cadastro de Funcionarios</h3>
     </div>
     <div class="col-md-2">
-        <select class=" form-control" ng-model="filtroStatus" ng-change="filter(filtroStatus)">
+        <select class=" form-control printConf" ng-model="filtroStatus" ng-change="filter(filtroStatus)">
             <option value="sem-filtro">Sem Filtro</option>
             <option value="ativo">Ativos</option>
             <option value="inativo">Inativos</option>
         </select> 
     </div>
     <div class="col-md-4 text-right">
-        <button class="btn btn-primary" ng-click="generatePDF()">Gerar PDF</button>
-        <button class="btn btn-success" ng-click="send('add')">Cadastrar Novo</button>
+        <button class="btn btn-info" ng-click="generatePDF()">PDF</button>
+        <button class="btn btn-success notPrint" ng-click="send('add')">Cadastrar Novo</button>
     </div>
 </div>
 <br>
 
-<table class="table">
-    <thead>
+<table class="table" id="table">
+    <thead class="printConf">
         <tr>
             <td>Id</td>
             <td>NOME</td>
@@ -32,8 +32,8 @@
             <td></td>
         </tr>
     </thead>
-    <tbody>
-        <tr ng-repeat="x in grid">
+    <tbody class="printConf">
+        <tr ng-repeat="x in grid" >
             <td>{{x.id_employee}}</td>
             <td>{{x.name}}</td>
             <td>{{ formatarData(x.birth_date) }}</td>
@@ -43,8 +43,8 @@
             <td>{{x.phone}}</td>
             <td>{{x.status}}</td>
             <td width="200">
-                <button class="btn btn-info" ng-click="send($index, x)">Editar</button>
-                <button class="btn btn-danger" ng-click="del($index, x)">Deletar</button>
+                <button class="btn btn-info notPrint" ng-click="send($index, x)">Editar</button>
+                <button class="btn btn-danger notPrint" ng-click="del($index, x)">Deletar</button>
             </td>
         </tr>
     </tbody>
