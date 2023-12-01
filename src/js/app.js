@@ -119,7 +119,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                         'Authorization': 'Bearer ' + token},        
                 })
                 .then(function(response) {
-                    console.log(response)
+                    console.log("teste" + response)
                     $scope.grid = response.data;
                 })
 
