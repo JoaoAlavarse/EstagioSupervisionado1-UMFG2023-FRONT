@@ -133,6 +133,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
                                         },
                                         error: function (jqXHR, textStatus, errorThrown) {
                                             alert("Funcionario não pôde ser excluido")
+                                            window.location.reload();
                                         }
                                     });
                                 }
