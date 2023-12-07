@@ -13,11 +13,12 @@
             <option value="CONCLUIDA">CONCLUIDA</option>
         </select>
     </div>
-    <div class="col-md-4 text-right">
-        <button class="btn btn-info" ng-click="generatePDF()">Relatório</button>
-        <button class="btn btn-success" ng-click="send('add')">Cadastrar Novo</button>
+    <div class="col-md-4 text-right d-print-none">
+        <button class="btn btn-info" ng-click="generatePDF()"> <i class="fa fa-list-alt"></i> Relatório</button>
+        <button class="btn btn-success" ng-click="send('add')"> <i class="fa fa-check"></i> Cadastrar Novo</button>
     </div>
 </div>
+<br>
 
 
 <table class="table" id="table">
@@ -30,8 +31,8 @@
             <td>Data de Entrega</td>
             <td>Endereco</td>
             <td>Status</td>
-            <td></td>
-            <td></td>
+            <td class="d-print-none"></td>
+            <td class="d-print-none"></td>
         </tr>
     </thead>
     <tbody>
@@ -43,10 +44,13 @@
             <td>{{formatarData(x.delivery_date)}}</td>
             <td>{{x.address}}</td>
             <td>{{x.status}}</td>
-            <td width="200">
-                <button class="btn btn-info notPrint" ng-click="send($index, x)">Editar</button>
-                <button class="btn btn-danger notPrint" ng-click="del($index, x)">Deletar</button>
+            <td width="270" class="d-print-none">
+                <button class="btn btn-info notPrint" ng-click="send($index, x)"><i class="fa fa-edit"></i> Editar</button>
+                <button class="btn btn-danger notPrint" ng-click="del($index, x)"> <i class="fa fa-times "></i> Deletar</button>
             </td>
         </tr>
     </tbody>
 </table>
+<div class="d-print-block" style="text-align: center; padding: 10px; display: none;">
+    Data de Geração: <span id="dataGeracao"></span>
+</div>

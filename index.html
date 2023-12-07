@@ -11,12 +11,12 @@
 
     <title>MG MONTAGEM</title>
 
+    <link rel="stylesheet" href="./src/css/pdf.css" media="print">
     <link href="./src/fonts/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="./src/css/admin.min.css" rel="stylesheet">
     <link href="./src/css/angular-confirm.min.css" rel="stylesheet">
     <link href="./src/css/app.css" rel="stylesheet">
     <link rel="icon" href="./src/img/logo.png" type="image/x-icon">
-    <link rel="stylesheet" href="./src/css/pdf.css" media="print">
 
 
     <script src="./src/lib/jquery.min.js"></script>
@@ -35,7 +35,7 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <ul class="navbar-nav bg-primary sidebar sidebar-dark accordion notPrint" id="accordionSidebar">
+        <ul class="navbar-nav bg-primary sidebar sidebar-dark accordion notPrint d-print-none" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
@@ -64,7 +64,7 @@
             <li class="nav-item">
                 <a class="nav-link collapsed" href="" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
+                    <i class="fa fa-address-card"></i>
                     <span>Funcionário</span>
                 </a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
@@ -96,7 +96,7 @@
              <li class="nav-item">
                 <a class="nav-link collapsed" href="" data-toggle="collapse" data-target="#collapseThree"
                     aria-expanded="true" aria-controls="collapseThree">
-                    <i class="fas fa-fw fa-cog"></i>
+                    <i class="fa fa-industry"></i>
                     <span>Obras</span>
                 </a>
                 <div id="collapseThree" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
@@ -144,10 +144,6 @@
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profile
-                                </a>
                                 <div class="dropdown-divider"></div>
                                 <a ng-click="logout()" class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -164,6 +160,14 @@
                     </ui-view>
                 </div>
             </div>
+
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>JJ &copy; feito em 2023</span>
+                    </div>
+                </div>
+            </footer>
 
         </div>
     </div>

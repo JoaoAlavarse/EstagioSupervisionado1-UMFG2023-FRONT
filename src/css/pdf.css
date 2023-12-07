@@ -1,7 +1,11 @@
+/* Estilos gerais */
 .notPrint {
-    display: none !important;
+    display: none;
 }
 
-.printConf {
-    display: block !important;
+/* Estilos específicos para impressão */
+@media print {
+    .printConf {
+        display: block !important;
+    }
 }
